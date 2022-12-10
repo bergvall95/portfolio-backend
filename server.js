@@ -18,26 +18,6 @@ AWS.config.credentials = new AWS.Credentials({
 AWS.config.update({ region: "us-east-1" });
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
-// const params = {
-//   TableName: "users",
-//   Item: {
-//     id: "4",
-//     name: "Alex 2",
-//     avatarUrl: "https://avatars.githubusercontent.com/u/1?v=4",
-//     profileUrl: "httpsL//github.com/bergvall95",
-//     email: "bergvall95@gmail.com",
-//   },
-// };
-
-// dynamoDb.put(params, (error, data) => {
-//   if (error) {
-//     console.log(error);
-//   } else {
-//     console.log("Success");
-//     console.log(data);
-//   }
-// });
-
 var TRUNCATE_THRESHOLD = 10,
   REVEALED_CHARS = 3,
   REPLACEMENT = "***";
@@ -212,9 +192,9 @@ app.post("/comments/create", function (req, res) {
         timestamp: timestamp,
       },
     };
+    //
     dynamoDb.put(params, (error, data) => {
       if (error) {
-        console.log(params);
         console.log(error);
         console.log("error creating comment");
         res.status(400).json({ error: "Could not create comment" });
@@ -225,9 +205,11 @@ app.post("/comments/create", function (req, res) {
   }
 });
 
+// how to get all comments from dynamoDb and sort by timestamp
 app.get("/comments", function (req, res) {
   const params = {
     TableName: "Comments",
+    SortKey: "timestamp",
   };
 
   dynamoDb.scan(params, (error, data) => {
